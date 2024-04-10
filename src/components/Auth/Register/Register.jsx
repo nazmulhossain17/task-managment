@@ -1,6 +1,43 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const Register = () => {
+  const { register, handleSubmit } = useForm();
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleRegister = async (data) => {
+    console.log(data);
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/register`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.user) {
+        console.log("Registration successful");
+        toast.success("Account created successful");
+        setLoading(false);
+        navigate("/");
+      } else {
+        // Registration failed, handle the error
+        console.error("Registration failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       <div className="lg:flex">
@@ -44,7 +81,7 @@ const Register = () => {
               Sign in
             </h2>
             <div className="mt-12">
-              <form>
+              <form onSubmit={handleSubmit(handleRegister)}>
                 <div>
                   <div className="text-sm font-bold tracking-wide text-gray-700">
                     Name
@@ -52,7 +89,7 @@ const Register = () => {
                   <input
                     className="w-full py-2 text-lg border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                     type="text"
-                    // onChange={(e) => setEmail(e.target.value)}
+                    {...register("name")}
                     placeholder="Your name"
                   />
                 </div>
@@ -63,7 +100,7 @@ const Register = () => {
                   <input
                     className="w-full py-2 text-lg border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                     type="email"
-                    // onChange={(e) => setEmail(e.target.value)}
+                    {...register("email")}
                     placeholder="abc@gmail.com"
                   />
                 </div>
@@ -81,13 +118,13 @@ const Register = () => {
                   <input
                     className="w-full py-2 text-lg border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                     type="password"
-                    // onChange={(e) => setPassword(e.target.value)}
+                    {...register("password")}
                     placeholder="Enter your password"
                   />
                 </div>
                 <div className="mt-10">
                   <button className="w-full p-4 font-semibold tracking-wide text-white rounded-full shadow-lg bg-primary font-display focus:outline-none focus:shadow-outline">
-                    Sign Up
+                    {loading ? "Creating Account..." : "Sign up"}
                   </button>
                 </div>
               </form>

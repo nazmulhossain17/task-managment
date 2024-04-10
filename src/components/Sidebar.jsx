@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import SidebarLinkGroup from "./SidebarLinkGroup";
 import Logo from "../assets/logo.png";
+import PropTypes from "prop-types";
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const location = useLocation();
   const { pathname } = location;
@@ -60,7 +61,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/dashboard">
-          {/* <p className="text-xl uppercase text-danger font-bold">
+          {/* <p className="text-xl font-bold uppercase text-danger">
               Inventory dashboard
             </p> */}
           <img className="" src={Logo} />
@@ -354,6 +355,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       </div>
     </aside>
   );
+};
+
+Sidebar.propTypes = {
+  sidebarOpen: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  setSidebarOpen: PropTypes.func.isRequired,
 };
 
 export default Sidebar;

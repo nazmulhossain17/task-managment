@@ -1,10 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-
+import {
+  deleteUserFailure,
+  deleteUserSuccess,
+  signInFailure,
+  signOutUserFailure,
+  signOutUserStart,
+  signOutUserSuccess,
+} from "../redux/userSlice/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  // const { currentUser } = useAppSelector((state) => state.user);
-  // const dispatch = useAppDispatch();
+  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const trigger = useRef(null);
   const dropdown = useRef(null);
 
@@ -39,33 +47,24 @@ const DropdownUser = () => {
   }, [dropdownOpen]);
 
   const handleLogOut = async () => {
-    //   try {
-    //     dispatch(signOutUserStart());
-    //     const res = await fetch(
-    //       "https://test-api-nine-sage.vercel.app/api/v1/log-out",
-    //       {
-    //         method: "GET",
-    //         credentials: "include",
-    //       }
-    //     );
-    //     if (!res.ok) {
-    //       throw new Error(`HTTP error! Status: ${res.status}`);
-    //     }
-    //     const data = await res.json();
-    //     if (data.success === false) {
-    //       dispatch(deleteUserFailure(data.message));
-    //       return;
-    //     }
-    //     dispatch(deleteUserSuccess(data));
-    //   } catch (error) {
-    //     if (error instanceof Error) {
-    //       console.error("Fetch error:", error.message);
-    //       dispatch(signInFailure(error.message));
-    //     } else {
-    //       console.error("Unknown error:", error);
-    //       dispatch(signInFailure("An unknown error occurred."));
-    //     }
-    //   }
+    try {
+      dispatch(signOutUserStart());
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/auth/log-out`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+
+      dispatch(signOutUserSuccess());
+    } catch (error) {
+      console.error("Fetch error:", error.message);
+      dispatch(signOutUserFailure(error.message));
+    }
   };
 
   return (

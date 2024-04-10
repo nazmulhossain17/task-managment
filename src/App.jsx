@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Loader from "./common/Loader";
 import Login from "./components/Auth/Login/Login";
 import Register from "./components/Auth/Register/Register";
 import DefaultLayout from "./Pages/DefaultLayout/DefaultLayout";
-
+import { Toaster } from "react-hot-toast";
 function App() {
   const [loading, setLoading] = useState(true);
 
@@ -16,6 +16,11 @@ function App() {
     <Loader />
   ) : (
     <BrowserRouter>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        containerClassName="overflow-auto"
+      />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/sign-up" element={<Register />} />

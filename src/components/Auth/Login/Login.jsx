@@ -1,6 +1,56 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+  userAdded,
+} from "../../../redux/userSlice/userSlice";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(signInStart());
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log(data);
+
+      if (data.success === false) {
+        dispatch(signInFailure(data.message));
+        return;
+      }
+      dispatch(signInSuccess(data));
+      dispatch(userAdded(data));
+      toast.success("Login successful");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Fetch error:", error.message);
+      dispatch(signInFailure(error.message));
+    }
+  };
   return (
     <>
       <div className="lg:flex">
@@ -35,7 +85,7 @@ const Login = () => {
                 </svg>
               </div>
               <div className="ml-2 text-2xl font-semibold tracking-wide text-purple-800">
-                Shoe Inventory
+                Task Management App
               </div>
             </div>
           </div>
@@ -44,7 +94,7 @@ const Login = () => {
               Sign in
             </h2>
             <div className="mt-12">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div>
                   <div className="text-sm font-bold tracking-wide text-gray-700">
                     Email Address
@@ -52,8 +102,8 @@ const Login = () => {
                   <input
                     className="w-full py-2 text-lg border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                     type="email"
-                    // onChange={(e) => setEmail(e.target.value)}
-                    placeholder="mike@gmail.com"
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="abc@gmail.com"
                   />
                 </div>
                 <div className="mt-8">
@@ -61,16 +111,11 @@ const Login = () => {
                     <div className="text-sm font-bold tracking-wide text-gray-700">
                       Password
                     </div>
-                    <div>
-                      <button className="text-xs font-semibold text-indigo-600 cursor-pointer font-display hover:text-indigo-800">
-                        Forgot Password? log out
-                      </button>
-                    </div>
                   </div>
                   <input
                     className="w-full py-2 text-lg border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                     type="password"
-                    // onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
                   />
                 </div>
