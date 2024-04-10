@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Loader from "./common/Loader";
 import Login from "./components/Auth/Login/Login";
 import Register from "./components/Auth/Register/Register";
@@ -15,11 +15,13 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/sign-up" element={<Register />} />
-      <Route path="/dashboard" element={<DefaultLayout />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/sign-up" element={<Register />} />
+        <Route path="/dashboard" element={<DefaultLayout />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

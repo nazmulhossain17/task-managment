@@ -35,7 +35,7 @@ const Register = () => {
                 </svg>
               </div>
               <div className="ml-2 text-2xl font-semibold tracking-wide text-purple-800">
-                Shoe Inventory
+                Task Management App
               </div>
             </div>
           </div>
