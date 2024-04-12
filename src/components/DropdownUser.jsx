@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  deleteUserFailure,
-  deleteUserSuccess,
-  signInFailure,
   signOutUserFailure,
   signOutUserStart,
   signOutUserSuccess,
@@ -78,18 +75,9 @@ const DropdownUser = () => {
         >
           <span className="hidden text-right lg:block">
             <span className="block text-sm font-medium text-black dark:text-white">
-              {/* {currentUser?.user?.name} */}Name
+              {currentUser?.user?.name}
             </span>
             <span className="block text-xs">Profile</span>
-          </span>
-
-          <span className="w-12 h-12 rounded-full">
-            <img
-              className="rounded-full"
-              // src={currentUser?.user?.image}
-
-              alt="User"
-            />
           </span>
 
           <svg

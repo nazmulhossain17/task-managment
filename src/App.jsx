@@ -1,33 +1,38 @@
-import { useEffect, useState } from "react";
+import { Suspense } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Loader from "./common/Loader";
 import Login from "./components/Auth/Login/Login";
 import Register from "./components/Auth/Register/Register";
 import DefaultLayout from "./Pages/DefaultLayout/DefaultLayout";
 import { Toaster } from "react-hot-toast";
-function App() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
-
-  return loading ? (
-    <Loader />
-  ) : (
+import PrivateRoute from "./Layout/PrivateRoute";
+import DashboardFront from "./components/DashboardFront";
+import Random from "./components/Random";
+const App = () => {
+  return (
     <BrowserRouter>
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-        containerClassName="overflow-auto"
-      />
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/sign-up" element={<Register />} />
-        <Route path="/dashboard" element={<DefaultLayout />} />
-      </Routes>
+      <>
+        <Toaster />
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/sign-up" element={<Register />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<DefaultLayout />}>
+              <Route index element={<DashboardFront />} />
+              <Route
+                path="create-shoes"
+                element={
+                  <Suspense fallback={<Loader />}>
+                    <Random />
+                  </Suspense>
+                }
+              />
+            </Route>
+          </Route>
+        </Routes>
+      </>
     </BrowserRouter>
   );
-}
+};
 
 export default App;
