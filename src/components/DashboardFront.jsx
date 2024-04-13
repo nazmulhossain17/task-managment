@@ -11,7 +11,8 @@ const DashboardFront = () => {
   const [taskIdToDelete, setTaskIdToDelete] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const [completedTasks, setCompletedTasks] = useState([]);
   useEffect(() => {
     const userId = currentUser?.user?.id;
     async function getData() {
@@ -34,6 +35,14 @@ const DashboardFront = () => {
   const openModal = () => {
     setIsModalOpen(true);
   };
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredData = data.filter((task) =>
+    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -146,10 +155,43 @@ const DashboardFront = () => {
       console.error("Error:", error);
     }
   };
+
+  const markTaskAsComplete = async (taskId) => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/task/${userId}/tasks/${taskId}/complete`,
+        {
+          method: "PUT",
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Task marked as complete successfully");
+
+        window.location.reload();
+      } else {
+        toast.error("Failed to mark task as complete");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <>
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Search tasks..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+        />
+      </div>
       <button
-        className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-meta-5 to-meta-6 group-hover:from-meta-5 group-hover:to-meta-6 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-meta-1 dark:focus:ring-meta-7"
+        className="relative mt-3 inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-meta-5 to-meta-6 group-hover:from-meta-5 group-hover:to-meta-6 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-meta-1 dark:focus:ring-meta-7"
         onClick={openModal}
       >
         <span className="relative px-5 py-2.5 transition-all ease-in duration-75 dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
@@ -234,7 +276,7 @@ const DashboardFront = () => {
       )}
 
       <div className="grid grid-cols-1 gap-4 mt-5 md:grid-cols-2 lg:grid-cols-4">
-        {data.map((item) => (
+        {filteredData.map((item) => (
           <div
             key={item.id}
             className="relative max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
@@ -277,25 +319,53 @@ const DashboardFront = () => {
               {item.description}
             </p>
             <button
-              href="#"
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-meta-5 hover:bg-success focus:ring-meta-1 dark:bg-primary dark:hover:bg-meta-8 dark:focus:ring-meta-9"
+              onClick={() => markTaskAsComplete(item.id)}
+              className={`inline-flex items-center px-3 py-2 text-sm font-medium text-center rounded-lg ${
+                item.completed
+                  ? "bg-success text-white cursor-not-allowed"
+                  : "bg-meta-5 text-white hover:bg-success focus:ring-meta-1 dark:bg-primary dark:hover:bg-meta-8 dark:focus:ring-meta-9"
+              }`}
+              disabled={item.completed}
             >
-              Mark As Complete
-              <svg
-                className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 14 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 5h12m0 0L9 1m4 4L9 9"
-                />
-              </svg>
+              {item.completed ? (
+                <>
+                  Completed{" "}
+                  <svg
+                    className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 10"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M1 5h12m0 0L9 1m4 4L9 9"
+                    />
+                  </svg>
+                </>
+              ) : (
+                <>
+                  Mark As Complete{" "}
+                  <svg
+                    className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 10"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M1 5h12m0 0L9 1m4 4L9 9"
+                    />
+                  </svg>
+                </>
+              )}
             </button>
           </div>
         ))}

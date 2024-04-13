@@ -47,6 +47,8 @@ const Login = () => {
       toast.success("Login successful");
       navigate("/dashboard");
     } catch (error) {
+      toast.error("Login failed");
+
       console.error("Fetch error:", error.message);
       dispatch(signInFailure(error.message));
     }

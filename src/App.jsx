@@ -7,7 +7,8 @@ import DefaultLayout from "./Pages/DefaultLayout/DefaultLayout";
 import { Toaster } from "react-hot-toast";
 import PrivateRoute from "./Layout/PrivateRoute";
 import DashboardFront from "./components/DashboardFront";
-import Random from "./components/Random";
+import Random from "./components/Settings";
+import Settings from "./components/Settings";
 const App = () => {
   return (
     <BrowserRouter>
@@ -20,10 +21,10 @@ const App = () => {
             <Route path="/dashboard" element={<DefaultLayout />}>
               <Route index element={<DashboardFront />} />
               <Route
-                path="create-shoes"
+                path="settings"
                 element={
                   <Suspense fallback={<Loader />}>
-                    <Random />
+                    <Settings />
                   </Suspense>
                 }
               />
